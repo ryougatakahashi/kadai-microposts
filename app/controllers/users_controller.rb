@@ -1,12 +1,13 @@
 class UsersController < ApplicationController
   before_action :require_user_logged_in, only: [:index, :show, :followings, :followers]
+
   def index
     @pagy, @users = pagy(User.order(id: :desc), items: 25)
   end
 
   def show
-     @user = User.find(params[:id])
-     @pagy, @microposts = pagy(@user.microposts.order(id: :desc))
+    @user = User.find(params[:id])
+    @pagy, @microposts = pagy(@user.microposts.order(id: :desc))
     counts(@user)
   end
 
@@ -15,7 +16,7 @@ class UsersController < ApplicationController
   end
 
   def create
-     @user = User.new(user_params)
+    @user = User.new(user_params)
 
     if @user.save
       flash[:success] = 'ユーザを登録しました。'
@@ -25,10 +26,28 @@ class UsersController < ApplicationController
       render :new
     end
   end
-end
 
- private
+  def followings
+    @user = User.find(params[:id])
+    @pagy, @followings = pagy(@user.followings)
+    counts(@user)
+  end
+
+  def followers
+    @user = User.find(params[:id])
+    @pagy, @followers = pagy(@user.followers)
+    counts(@user)
+  end
+  
+  def likes
+    @user = User.find(params[:id])
+    @pagy, @likes = pagy(@user.likes)
+    counts(@user)
+  end
+
+  private
 
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
   end
+end
